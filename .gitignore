@@ -1,0 +1,36 @@
+# LaTeX build files
+*.aux
+*.bbl
+*.blg
+*.fdb_latexmk
+*.fls
+*.lof
+*.lot
+*.log
+*.out
+*.toc
+*.synctex.gz
+*.synctex(busy)
+*.bcf
+*.run.xml
+*.xdv
+*.dvi
+*.tmp
+
+# Compiled thesis and audit reports (build them locally)
+*.pdf
+*_audit.json
+
+# Python
+__pycache__/
+*.pyc
+
+# Editors and operating systems
+.DS_Store
+Thumbs.db
+desktop.ini
+*.swp
+.vscode/
+
+# Keep the example figures
+!figures/*.pdf

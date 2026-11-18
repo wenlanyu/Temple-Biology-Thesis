@@ -1,0 +1,264 @@
+%% templethesis.sty -- formatting for a Temple University dissertation or master's thesis
+%% Follows the Graduate School "Dissertation and Thesis Handbook" (rev. 11.11.25).
+%% Temple-Biology-Thesis template, Yang Lab, Department of Biology, Temple University.
+%% MIT License -- see LICENSE.  https://github.com/Temple-Biology-YangLab/Temple-Biology-Thesis
+%% (Top/bottom geometry is 1.05/1.06in so that glyph tops, tall math and page-number
+%%  digits stay fully inside the required 1in margins.)
+%%   margins 1.5in left / 1in top, right, bottom (page numbers inside the margins);
+%%   roman page numbers for front matter (title page = i, not shown), arabic from Chapter 1;
+%%   double-spaced text; single-spaced captions and tables;
+%%   block quotes single-spaced, indented 1/2in from both margins;
+%%   footnotes same size as the text, single-spaced within, blank line between, first line indented 1/2in;
+%%   TOC/lists single-spaced within entries, double-spaced between, with dot leaders;
+%%   references single-spaced within entries, double-spaced between;
+%%   "CHAPTER #" and chapter titles centered in capitals; no running heads;
+%%   Type 1 fonts (pdfLaTeX + Times), black text.
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{templethesis}[2026/11/18 v1.0 Temple University dissertation/thesis format]
+
+% ---------------------------------------------------------------- font option
+% Default: Times (Type 1 clone of Times New Roman) -- use with \documentclass[12pt]{report}.
+% Option "arial": Helvetica (Type 1, same metrics as Arial) -- use with \documentclass[10pt]{report}.
+% The Handbook accepts either "10-point Arial or 12-point Times New Roman" (or equivalent).
+\newif\ifthesis@arial
+\DeclareOption{arial}{\thesis@arialtrue}
+\DeclareOption{times}{\thesis@arialfalse}
+\ProcessOptions\relax
+
+% ---------------------------------------------------------------- page & fonts
+\RequirePackage[letterpaper,left=1.5in,right=1.04in,top=1.05in,bottom=1.06in,includefoot,footskip=0.5in]{geometry}
+\RequirePackage[T1]{fontenc}
+\RequirePackage[utf8]{inputenc}
+\RequirePackage{textcomp}
+\ifthesis@arial
+  \RequirePackage{helvet}            % Nimbus Sans = Helvetica (Arial metrics), Type 1
+  \renewcommand{\familydefault}{\sfdefault}
+  \renewcommand{\rmdefault}{phv}     % anything that asks for the serif family also gets Helvetica
+  \RequirePackage[helvet]{sfmath}    % sans-serif math to match
+\else
+  \RequirePackage{mathptmx}          % Times text + math (Type 1)
+\fi
+% Typewriter text (\texttt, \verb, code): Latin Modern Typewriter is Type 1.  The T1 default
+% (EC fonts) becomes a bitmap Type 3 font on installations without cm-super.
+\renewcommand{\ttdefault}{lmtt}
+\RequirePackage{amsmath,amssymb}
+\RequirePackage{setspace}
+\RequirePackage{graphicx}
+\RequirePackage{array,longtable,booktabs,multirow,makecell}
+\RequirePackage{calc}
+\RequirePackage{etoolbox}
+\RequirePackage{newunicodechar}
+\RequirePackage{xcolor}
+\RequirePackage[hyphens]{url}
+\urlstyle{same}
+\RequirePackage{titlesec}
+\RequirePackage{tocloft}
+\RequirePackage[font={singlespacing},labelfont=bf,labelsep=period,justification=justified,singlelinecheck=false,skip=8pt]{caption}
+\RequirePackage[numbers,super,sort&compress]{natbib}
+\RequirePackage{placeins}
+\RequirePackage{indentfirst}      % indent the first paragraph after headings too (consistent ½-inch indents)
+\RequirePackage{float}            % [H] placement: appendix figures stay in order
+\RequirePackage{pdflscape}
+
+\doublespacing
+\raggedbottom
+\widowpenalty=10000 \clubpenalty=10000 \displaywidowpenalty=10000
+\setlength{\parindent}{0.5in}   % Handbook: 1/2-inch paragraph indent
+\setlength{\LTcapwidth}{\textwidth}
+\renewcommand{\arraystretch}{1.15}
+\setlength{\emergencystretch}{3em}
+% float pages: content starts at the top of the page
+\setlength{\@fptop}{0pt}\setlength{\@fpsep}{12pt plus 1fil}\setlength{\@fpbot}{0pt plus 1fil}
+\setcounter{totalnumber}{4}\setcounter{topnumber}{2}\setcounter{bottomnumber}{2}
+\renewcommand{\topfraction}{0.9}\renewcommand{\bottomfraction}{0.8}\renewcommand{\textfraction}{0.08}\renewcommand{\floatpagefraction}{0.7}
+
+% no running heads; page number bottom centre on every page (incl. chapter openers)
+\pagestyle{plain}
+
+% ---------------------------------------------------------------- block quotes and footnotes
+% Handbook: quotations of 40+ words are single-spaced, indented 1/2in from the left and right
+% margins, with no quotation marks.  Both quote and quotation give this format.
+\renewenvironment{quote}%
+  {\par\begin{singlespace}\begin{list}{}{\leftmargin=0.5in\rightmargin=0.5in\topsep=6pt\parsep=12pt\listparindent=0pt}\item\relax}%
+  {\end{list}\end{singlespace}\par}
+\let\quotation\quote \let\endquotation\endquote
+% Handbook: notes single-spaced within, double-spaced between, first line indented 1/2in,
+% same font and (ideally) the same size as the text -- never below 10 pt.
+\renewcommand\@makefntext[1]{\normalsize\setstretch{1}\parindent=0.5in\noindent\hspace*{0.5in}\@thefnmark.\enspace#1}
+\setlength{\footnotesep}{24pt}
+\setlength{\skip\footins}{24pt plus 4pt minus 2pt}
+
+% ---------------------------------------------------------------- headings
+\setcounter{secnumdepth}{3}
+\setcounter{tocdepth}{2}            % chapters, sections, subsections in the TOC
+\titleformat{\chapter}[display]{\normalfont\normalsize\centering}{\MakeUppercase{\chaptertitlename}\ \thechapter}{0pt}{\singlespacing}[\vspace{0pt}]
+\titlespacing*{\chapter}{0pt}{-1.108\baselineskip}{24pt}   % cancel report-class space: heading starts at top of text area
+\titleformat{name=\chapter,numberless}[block]{\normalfont\normalsize\centering}{}{0pt}{\singlespacing}
+\titlespacing*{name=\chapter,numberless}{0pt}{-2.2125\baselineskip}{24pt}
+\titleformat{\section}{\normalfont\normalsize\bfseries\singlespacing}{\thesection}{0.75em}{}
+\titleformat{\subsection}{\normalfont\normalsize\bfseries\singlespacing}{\thesubsection}{0.75em}{}
+\titleformat{\subsubsection}{\normalfont\normalsize\bfseries\itshape\singlespacing}{\thesubsubsection}{0.75em}{}
+\titlespacing*{\section}{0pt}{12pt}{6pt}
+\titlespacing*{\subsection}{0pt}{12pt}{6pt}
+\titlespacing*{\subsubsection}{0pt}{12pt}{6pt}
+
+% ---------------------------------------------------------------- TOC and lists
+\renewcommand{\contentsname}{TABLE OF CONTENTS}
+\renewcommand{\listfigurename}{LIST OF FIGURES}
+\renewcommand{\listtablename}{LIST OF TABLES}
+\renewcommand{\bibname}{REFERENCES}
+\renewcommand{\cfttoctitlefont}{\hfill\normalfont\normalsize}
+\renewcommand{\cftaftertoctitle}{\hfill\null\par\nobreak\vspace{12pt}\hfill Page}
+\renewcommand{\cftloftitlefont}{\hfill\normalfont\normalsize}
+\renewcommand{\cftafterloftitle}{\hfill\null\par\nobreak\vspace{12pt}\noindent Figure\hfill Page}
+\renewcommand{\cftlottitlefont}{\hfill\normalfont\normalsize}
+\renewcommand{\cftafterlottitle}{\hfill\null\par\nobreak\vspace{12pt}\noindent Table\hfill Page}
+\setlength{\cftbeforetoctitleskip}{-1.42em}   % title starts at the top of the text area, like chapter headings
+\setlength{\cftbeforeloftitleskip}{-1.42em}
+\setlength{\cftbeforelottitleskip}{-1.42em}
+\setlength{\cftaftertoctitleskip}{12pt}
+\setlength{\cftafterloftitleskip}{12pt}
+\setlength{\cftafterlottitleskip}{12pt}
+\renewcommand{\cftchapfont}{\normalfont}
+\renewcommand{\cftchappagefont}{\normalfont}
+\renewcommand{\cftchapleader}{\cftdotfill{\cftdotsep}}
+\renewcommand{\cftchapaftersnum}{.}
+\setlength{\cftbeforechapskip}{12pt}
+\setlength{\cftbeforesecskip}{12pt}
+\setlength{\cftbeforesubsecskip}{12pt}
+\setlength{\cftbeforefigskip}{12pt}
+\setlength{\cftbeforetabskip}{12pt}
+\setlength{\cftchapindent}{0pt}   \setlength{\cftchapnumwidth}{2em}
+\setlength{\cftsecindent}{2em}    \setlength{\cftsecnumwidth}{2.6em}
+\setlength{\cftsubsecindent}{4.6em} \setlength{\cftsubsecnumwidth}{3.9em}
+\setlength{\cftfignumwidth}{3.2em} \setlength{\cftfigindent}{0pt}
+\setlength{\cfttabnumwidth}{3.2em} \setlength{\cfttabindent}{0pt}
+\renewcommand{\cftfigaftersnum}{.}
+\renewcommand{\cfttabaftersnum}{.}
+\cftsetrmarg{3.2em plus 1fil}\cftsetpnumwidth{2.2em}
+% single spacing inside entries (double between, via the before-skips above)
+\AtBeginDocument{%
+  \pretocmd{\tableofcontents}{\clearpage\begingroup\singlespacing\hyphenpenalty=10000\exhyphenpenalty=10000}{}{}\apptocmd{\tableofcontents}{\endgroup}{}{}%
+  \pretocmd{\listoffigures}{\clearpage\begingroup\singlespacing\hyphenpenalty=10000\let\addvspace\@gobble}{}{}\apptocmd{\listoffigures}{\endgroup}{}{}%
+  \pretocmd{\listoftables}{\clearpage\begingroup\singlespacing\hyphenpenalty=10000\let\addvspace\@gobble}{}{}\apptocmd{\listoftables}{\endgroup}{}{}}
+% "CHAPTER" / "APPENDICES" group labels in the TOC
+\newcommand{\tocgrouplabel}[1]{\addtocontents{toc}{\protect\vspace{12pt}\protect\noindent #1\protect\par}}
+
+% ---------------------------------------------------------------- numbering
+\counterwithin{figure}{chapter}
+\counterwithin{table}{chapter}
+\counterwithin{equation}{chapter}
+
+% ---------------------------------------------------------------- front-matter helpers
+\newcommand{\thesistitle}[1]{\def\@thesistitle{#1}}
+\newcommand{\thesisauthor}[1]{\def\@thesisauthor{#1}}
+\newcommand{\thesisdegree}[1]{\def\@thesisdegree{#1}}
+\newcommand{\diplomadate}[1]{\def\@diplomadate{#1}}
+\newcommand{\copyrightyear}[1]{\def\@copyrightyear{#1}}
+\newcommand{\committee}[1]{\def\@committee{#1}}
+% Label above the committee list.  Set automatically by \thesistype; to override, put
+% \committeelabel{...} AFTER \thesistype in main.tex.
+\newcommand{\committeelabel}[1]{\def\@committeelabel{#1}}
+% Document type on the title page: Dissertation (doctoral, default) or Thesis (master's).
+% Wording follows the Graduate School templates: the doctoral E-Title Page lists
+% "Examining Committee Members:"; the thesis E-Title Page (Handbook Appendix E) lists
+% "Thesis Approvals:".
+\newcommand{\thesistype}[1]{\def\@thesistype{#1}%
+  \ifstrequal{#1}{Thesis}{\committeelabel{Thesis Approvals:}}{\committeelabel{Examining Committee Members:}}}
+\thesistype{Dissertation}
+
+% E-Title Page (Graduate School Appendix E template): page i, number not shown
+\newcommand{\etitlerule}{\par\noindent\rule{\textwidth}{0.4pt}\par}
+\newcommand{\maketitlepage}{%
+  \begin{titlepage}
+  \setcounter{page}{1}
+  \begin{singlespace}
+  \centering
+  % title block, bottom-aligned just above the first rule (inverted pyramid, all capitals)
+  \begin{minipage}[b][1.3in][b]{\textwidth}\centering \@thesistitle\end{minipage}\par
+  \vspace{0.25in}
+  \etitlerule
+  \vspace{0.4in}
+  A \@thesistype\\
+  Submitted to\\
+  the Temple University Graduate Board\par
+  \vspace{0.35in}
+  \etitlerule
+  \vspace{0.4in}
+  In Partial Fulfillment\\
+  of the Requirements for the Degree\\
+  \@thesisdegree\par
+  \vspace{0.35in}
+  \etitlerule
+  \vspace{0.4in}
+  by\\[6pt]
+  \@thesisauthor\\
+  \@diplomadate\par
+  \vfill
+  \raggedright
+  \@committeelabel\par
+  \vspace{12pt}
+  \@committee\par
+  
+  \end{singlespace}
+  \end{titlepage}
+  \setcounter{page}{2}}   % title page counts as i; next page is ii
+
+% Copyright page: page ii, centred top-to-bottom and left-to-right
+\newcommand{\makecopyrightpage}{%
+  \clearpage\thispagestyle{plain}%
+  \null\vfill
+  \begin{center}\begin{singlespace}
+  \copyright\\[12pt] Copyright\\[12pt] \@copyrightyear\\[12pt] by\\[12pt] \@thesisauthor\\[12pt] All Rights Reserved
+  \end{singlespace}\end{center}
+  \vfill\null\clearpage}
+
+% Front-matter section: centred capital heading, listed in the TOC with roman page number
+\newcommand{\frontsection}[1]{%
+  \chapter*{#1}%
+  \addcontentsline{toc}{chapter}{#1}}
+
+% List of abbreviations: two columns, single-spaced within an entry, double-spaced between
+% entries (same rule as the other front-matter lists). Usage: \abbrev{NPC}{Nuclear pore complex}
+\newenvironment{abbrevlist}%
+  {\begingroup\singlespacing\setlength{\LTpre}{0pt}\setlength{\LTpost}{0pt}%
+   \begin{longtable}{@{}>{\raggedright\arraybackslash}p{1.25in}@{}>{\raggedright\arraybackslash}p{\dimexpr\textwidth-1.25in\relax}@{}}}%
+  {\end{longtable}\endgroup}
+\newcommand{\abbrev}[2]{#1 & #2\tabularnewline\noalign{\vskip 12pt}}
+
+% Dedication page: no heading (Graduate School template), listed in the TOC, text centred
+% horizontally and vertically in a narrower double-spaced block.
+\newcommand{\dedication}[1]{%
+  \clearpage\phantomsection\addcontentsline{toc}{chapter}{DEDICATION}%
+  \thispagestyle{plain}\null\vfill
+  \begin{center}\begin{minipage}{4.5in}\centering\doublespacing #1\par\end{minipage}\end{center}%
+  \vfill\vfill\null\clearpage}
+
+% Chapter note (publication status, author contributions): single-spaced block
+\newenvironment{chapternote}{\par\begin{singlespace}\begin{list}{}{\leftmargin=0.5in\rightmargin=0.5in\itemsep=6pt\parsep=6pt}\item\raggedright\relax}{\end{list}\end{singlespace}\par\medskip}
+
+% ---------------------------------------------------------------- bibliography
+\setlength{\bibsep}{12pt}
+\renewcommand{\bibfont}{\singlespacing}
+% Handbook: number starts at the left margin, turnover lines indented exactly 1/2 inch;
+% single-spaced within entries, a blank line (12pt) between entries.
+\renewcommand{\bibnumfmt}[1]{#1.\hfill}
+\renewcommand\NAT@bibsetnum[1]{%
+  \setlength{\leftmargin}{0.5in}\setlength{\labelwidth}{\dimexpr0.5in-\labelsep\relax}%
+  \setlength{\itemsep}{\bibsep}\setlength{\parsep}{\z@}}
+
+% ---------------------------------------------------------------- table type size
+% Wide tables step down one or two sizes, but never below 10 pt (Handbook minimum).
+\ifthesis@arial
+  \newcommand{\tablesmall}{\normalsize}   % 10 pt base: already at the minimum
+  \newcommand{\tabletiny}{\normalsize}
+\else
+  \newcommand{\tablesmall}{\small}        % 10.95 pt
+  \newcommand{\tabletiny}{\footnotesize}  % 10 pt
+\fi
+
+% ---------------------------------------------------------------- misc text helpers
+\providecommand{\tightlist}{\setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\newcommand{\pandocbounded}[1]{#1}
+\input{unicode-chars}
+\endinput

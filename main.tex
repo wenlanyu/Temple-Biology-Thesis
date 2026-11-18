@@ -1,0 +1,77 @@
+% !TeX program = pdflatex
+% !TeX encoding = UTF-8
+% !TeX spellcheck = en_US
+%% Temple University Biology -- dissertation / thesis template (main file)
+%% Build:  pdflatex main  ->  bibtex main  ->  pdflatex main  ->  pdflatex main
+%%         (or: latexmk -pdf main)
+%% Then check the format:  python tools/format_audit.py main.pdf
+%%
+%% FONT -- choose ONE pair (the Graduate School accepts 12-pt Times New Roman or 10-pt Arial):
+%%   Times 12 pt (default):  \documentclass[12pt,oneside,letterpaper]{report}  +  \usepackage{templethesis}
+%%   Arial 10 pt:            \documentclass[10pt,oneside,letterpaper]{report}  +  \usepackage[arial]{templethesis}
+\documentclass[12pt,oneside,letterpaper]{report}
+\usepackage{templethesis}
+\usepackage[hidelinks,bookmarksnumbered]{hyperref}   % hidelinks keeps all text black
+\usepackage{bookmark}
+
+% ---------------------------------------------------------------- title-page data
+% Title: ALL CAPITALS, inverted pyramid (longest line first); no symbols, Greek letters,
+% superscripts or formulae -- spell them out (they break keyword searches).
+\thesistitle{INSERT THE TITLE OF YOUR DISSERTATION OR THESIS\\HERE IN ALL CAPITAL LETTERS\\AS AN INVERTED PYRAMID}
+\thesisauthor{Firstname M. Lastname}   % exactly as on your Temple University transcript
+% Doctoral students (default):
+\thesistype{Dissertation}
+\thesisdegree{DOCTOR OF PHILOSOPHY}
+% Master's students -- use these two lines instead (the title page then follows the thesis
+% E-Title Page, Handbook Appendix E, including the "Thesis Approvals:" heading):
+%   \thesistype{Thesis}
+%   \thesisdegree{MASTER OF SCIENCE}
+\diplomadate{May 2027}               % official diploma date: December, May or August only
+\copyrightyear{2027}
+\committee{%
+  Advisor Name, Ph.D., Advisory Chair, Department of Biology\\[6pt]
+  Member Name, Ph.D., Department of Biology\\[6pt]
+  Member Name, Ph.D., Department of Biology\\[6pt]
+  Member Name, Ph.D., Department of Biology\\[6pt]
+  Member Name, Ph.D., External Member, Department or Institution}
+
+\begin{document}
+
+% ================================================================ FRONT MATTER
+% Order required by the Handbook: (Title), Copyright, Abstract, Dedication, Acknowledgments,
+% Preface, Table of Contents, Lists.
+\pagenumbering{roman}
+\maketitlepage                       % page i (number not shown)
+\makecopyrightpage                   % page ii (optional; delete this line to omit)
+\input{frontmatter/abstract}
+\input{frontmatter/dedication}       % optional
+\input{frontmatter/acknowledgments}  % optional
+\tableofcontents
+\clearpage
+\phantomsection\addcontentsline{toc}{chapter}{LIST OF TABLES}
+\listoftables
+\clearpage
+\phantomsection\addcontentsline{toc}{chapter}{LIST OF FIGURES}
+\listoffigures
+\input{frontmatter/abbreviations}    % optional LIST OF ABBREVIATIONS
+
+% ================================================================ BODY
+\clearpage
+\pagenumbering{arabic}               % Chapter 1 begins on page 1
+\tocgrouplabel{CHAPTER}
+\input{chapters/ch1_introduction}
+\input{chapters/ch2_manuscript}
+\input{chapters/ch3_discussion}
+
+% ================================================================ BACK MATTER
+\clearpage
+\phantomsection
+\addcontentsline{toc}{chapter}{REFERENCES}
+\bibliographystyle{thesis}           % Nature-style numbered references (see thesis.bst)
+\bibliography{references}
+
+\appendix
+\tocgrouplabel{APPENDICES}
+\input{appendices/appA_supplementary}
+
+\end{document}
